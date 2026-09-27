@@ -852,27 +852,17 @@
   // on aligne 3 bonbons pareils, et les combos font monter la musique.
   // =====================================================================
   const Bonbons = (() => {
-    // Chaque couleur a sa forme : on reconnaît les bonbons même sans les couleurs.
+    // Six petits monstres « starters », un par type (créations originales).
+    // Chaque couleur a sa silhouette : on les reconnaît même sans les couleurs.
     const FORMES = [
-      // sucette (rose)
-      '<rect x="46" y="58" width="8" height="38" rx="4" style="fill:var(--cream)"/><circle cx="50" cy="38" r="31"/>'
-        + '<path d="M50 38 m-4 0 a4 4 0 1 1 8 0 a10 10 0 1 1 -18 0 a16 16 0 1 1 30 0 a22 22 0 1 1 -40 2" style="fill:none;stroke:var(--ink-light);stroke-width:4;stroke-linecap:round" opacity=".55"/>'
-        + '<ellipse cx="37" cy="21" rx="9" ry="5" style="fill:var(--ink-light)" opacity=".45"/>',
-      // bonbon emballé (orange)
-      '<path d="M28 50 L6 30 Q1 50 6 70 Z"/><path d="M72 50 L94 30 Q99 50 94 70 Z"/><ellipse cx="50" cy="50" rx="27" ry="23"/>'
-        + '<path d="M40 30 Q34 50 40 70 M60 30 Q66 50 60 70" style="fill:none;stroke:var(--ink-light);stroke-width:4;stroke-linecap:round" opacity=".45"/>'
-        + '<ellipse cx="44" cy="36" rx="7" ry="4" style="fill:var(--ink-light)" opacity=".45"/>',
-      // étoile (jaune)
-      '<path d="M50.0 9.0 L61.2 37.6 L91.8 39.4 L68.1 58.9 L75.9 88.6 L50.0 72.0 L24.1 88.6 L31.9 58.9 L8.2 39.4 L38.8 37.6 Z" style="stroke-linejoin:round"/>'
-        + '<ellipse cx="45" cy="32" rx="6" ry="4" style="fill:var(--ink-light)" opacity=".45"/>',
-      // losange (vert)
-      '<path d="M50 6 L92 50 L50 94 L8 50 Z"/><ellipse cx="40" cy="32" rx="10" ry="6" style="fill:var(--ink-light)" opacity=".45"/>',
-      // hexagone (bleu)
-      '<path d="M50 6 L88 28 L88 72 L50 94 L12 72 L12 28 Z"/><ellipse cx="36" cy="30" rx="13" ry="7" style="fill:var(--ink-light)" opacity=".45"/>',
-      // cœur (violet)
-      '<path d="M50 90 C20 68 6 52 6 34 C6 18 18 8 31 8 C40 8 46 13 50 20 C54 13 60 8 69 8 C82 8 94 18 94 34 C94 52 80 68 50 90Z"/><ellipse cx="30" cy="26" rx="11" ry="6" style="fill:var(--ink-light)" opacity=".45"/>',
+      '<circle cx="50" cy="58" r="33"/><path d="M50 26 L33 13 Q28 25 33 36 Z M50 26 L67 13 Q72 25 67 36 Z" style="fill:var(--ink-light)" opacity=".85"/><circle cx="50" cy="26" r="5" style="fill:var(--ink-light)"/><ellipse cx="39" cy="56" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="40" cy="57" r="3.9" style="fill:var(--navy)"/><circle cx="41.5" cy="54.5" r="1.6" style="fill:var(--ink-light)"/><ellipse cx="61" cy="56" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="62" cy="57" r="3.9" style="fill:var(--navy)"/><circle cx="63.5" cy="54.5" r="1.6" style="fill:var(--ink-light)"/><path d="M46.0 70 Q50 75.6 54.0 70" style="fill:none;stroke:var(--navy);stroke-width:3;stroke-linecap:round"/>',
+      '<path d="M50 3 C60 15 70 20 63 36 C60 29 56 27 54 33 C49 25 42 25 42 34 C35 22 43 14 50 3 Z" style="fill:var(--t4)"/><ellipse cx="50" cy="62" rx="32" ry="31"/><ellipse cx="39" cy="58" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="40" cy="59" r="3.9" style="fill:var(--navy)"/><circle cx="41.5" cy="56.5" r="1.6" style="fill:var(--ink-light)"/><ellipse cx="61" cy="58" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="62" cy="59" r="3.9" style="fill:var(--navy)"/><circle cx="63.5" cy="56.5" r="1.6" style="fill:var(--ink-light)"/><path d="M46.0 73 Q50 78.6 54.0 73" style="fill:none;stroke:var(--navy);stroke-width:3;stroke-linecap:round"/>',
+      '<path d="M32 44 L12 5 L45 33 Z M68 44 L88 5 L55 33 Z"/><path d="M12 5 L19 19 L24 15 Z M88 5 L81 19 L76 15 Z" style="fill:var(--navy)"/><circle cx="50" cy="60" r="31"/><path d="M52 74 L45 84 L51 84 L47 93 L58 81 L52 81 L56 74 Z" style="fill:var(--t2)"/><ellipse cx="39" cy="55" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="40" cy="56" r="3.9" style="fill:var(--navy)"/><circle cx="41.5" cy="53.5" r="1.6" style="fill:var(--ink-light)"/><ellipse cx="61" cy="55" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="62" cy="56" r="3.9" style="fill:var(--navy)"/><circle cx="63.5" cy="53.5" r="1.6" style="fill:var(--ink-light)"/><path d="M46.5 67 Q50 71.9 53.5 67" style="fill:none;stroke:var(--navy);stroke-width:3;stroke-linecap:round"/>',
+      '<path d="M50 30 L50 16" style="stroke:var(--t5);stroke-width:4;stroke-linecap:round"/><path d="M50 18 C40 4 26 8 24 16 C34 22 44 22 50 18 Z M50 18 C60 4 74 8 76 16 C66 22 56 22 50 18 Z" style="fill:var(--t5)"/><ellipse cx="50" cy="62" rx="34" ry="30"/><ellipse cx="39" cy="58" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="40" cy="59" r="3.9" style="fill:var(--navy)"/><circle cx="41.5" cy="56.5" r="1.6" style="fill:var(--ink-light)"/><ellipse cx="61" cy="58" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="62" cy="59" r="3.9" style="fill:var(--navy)"/><circle cx="63.5" cy="56.5" r="1.6" style="fill:var(--ink-light)"/><path d="M46.0 72 Q50 77.6 54.0 72" style="fill:none;stroke:var(--navy);stroke-width:3;stroke-linecap:round"/>',
+      '<path d="M50 5 C66 28 84 44 84 64 C84 83 69 95 50 95 C31 95 16 83 16 64 C16 44 34 28 50 5 Z"/><path d="M26 66 Q34 60 42 66 T58 66 T74 66" style="fill:none;stroke:var(--ink-light);stroke-width:3;stroke-linecap:round" opacity=".5"/><ellipse cx="40" cy="52" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="41" cy="53" r="3.9" style="fill:var(--navy)"/><circle cx="42.5" cy="50.5" r="1.6" style="fill:var(--ink-light)"/><ellipse cx="60" cy="52" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="61" cy="53" r="3.9" style="fill:var(--navy)"/><circle cx="62.5" cy="50.5" r="1.6" style="fill:var(--ink-light)"/><path d="M46.0 78 Q50 83.6 54.0 78" style="fill:none;stroke:var(--navy);stroke-width:3;stroke-linecap:round"/>',
+      '<path d="M18 92 L18 46 C18 22 33 9 50 9 C67 9 82 22 82 46 L82 92 L71 83 L61 92 L50 83 L39 92 L29 83 Z"/><ellipse cx="39" cy="44" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="40" cy="45" r="3.9" style="fill:var(--navy)"/><circle cx="41.5" cy="42.5" r="1.6" style="fill:var(--ink-light)"/><ellipse cx="61" cy="44" rx="7" ry="8" style="fill:var(--ink-light)"/><circle cx="62" cy="45" r="3.9" style="fill:var(--navy)"/><circle cx="63.5" cy="42.5" r="1.6" style="fill:var(--ink-light)"/><ellipse cx="50" cy="64" rx="6" ry="7" style="fill:var(--navy)"/>',
     ];
-    const NOMS = ['roses', 'orange', 'jaunes', 'verts', 'bleus', 'violets'];
+    const NOMS = ['Fébi', 'Flammi', 'Zapi', 'Pousso', 'Goutto', 'Spectro'];
     const DIFF = [['Facile', 'var(--t6)'], ['Moyen', 'var(--t4)'], ['Difficile', 'var(--t2)'], ['Expert', 'var(--t10)']];
     const NIVEAUX = [
       { n: 7, couleurs: 4, coups: 20, score: 1000, diff: 0 },
@@ -1148,7 +1138,7 @@
     function decrire(c) {
       const parts = [];
       if (c.score) parts.push(`fais ${c.score} points`);
-      if (c.recolte) parts.push('récolte ' + Object.entries(c.recolte).map(([t, n]) => `${n} bonbons ${NOMS[t]}`).join(' et '));
+      if (c.recolte) parts.push('récolte ' + Object.entries(c.recolte).map(([t, n]) => `${n} ${NOMS[t]}`).join(' et '));
       if (c.gelee) parts.push('efface toute la gelée');
       const s = parts.join(', et ') + ` en ${c.coups} coups.`;
       return s[0].toUpperCase() + s.slice(1);
@@ -1331,7 +1321,7 @@
       note(2); setTimeout(() => note(1), 180);
       const manque = [];
       if (G.cfg.score && G.score < G.cfg.score) manque.push(`il manquait ${G.cfg.score - G.score} points`);
-      if (G.recolte) for (const [t, n] of Object.entries(G.recolte)) if (n > 0) manque.push(`${n} bonbons ${NOMS[t]}`);
+      if (G.recolte) for (const [t, n] of Object.entries(G.recolte)) if (n > 0) manque.push(`${n} ${NOMS[t]}`);
       if (G.cfg.gelee && geleeRestante()) manque.push(`${geleeRestante()} cases de gelée`);
       panneau(`<div class="big">🍬</div><h3>Plus de coups !</h3><p>Presque : ${manque.join(', ')}.</p>`, [
         ['Réessayer', () => niveau(G.lvl), true],
