@@ -852,13 +852,25 @@
   // on aligne 3 bonbons pareils, et les combos font monter la musique.
   // =====================================================================
   const Bonbons = (() => {
+    // Chaque couleur a sa forme : on reconnaît les bonbons même sans les couleurs.
     const FORMES = [
-      '<circle cx="50" cy="50" r="38"/>',
-      '<rect x="14" y="14" width="72" height="72" rx="18"/>',
-      '<path d="M50 10 L90 84 Q92 90 85 90 L15 90 Q8 90 10 84 Z"/>',
-      '<path d="M50 6 L92 50 L50 94 L8 50 Z"/>',
-      '<path d="M50 6 L88 28 L88 72 L50 94 L12 72 L12 28 Z"/>',
-      '<path d="M50 90 C20 68 6 52 6 34 C6 18 18 8 31 8 C40 8 46 13 50 20 C54 13 60 8 69 8 C82 8 94 18 94 34 C94 52 80 68 50 90Z"/>',
+      // sucette (rose)
+      '<rect x="46" y="58" width="8" height="38" rx="4" style="fill:var(--cream)"/><circle cx="50" cy="38" r="31"/>'
+        + '<path d="M50 38 m-4 0 a4 4 0 1 1 8 0 a10 10 0 1 1 -18 0 a16 16 0 1 1 30 0 a22 22 0 1 1 -40 2" style="fill:none;stroke:var(--ink-light);stroke-width:4;stroke-linecap:round" opacity=".55"/>'
+        + '<ellipse cx="37" cy="21" rx="9" ry="5" style="fill:var(--ink-light)" opacity=".45"/>',
+      // bonbon emballé (orange)
+      '<path d="M28 50 L6 30 Q1 50 6 70 Z"/><path d="M72 50 L94 30 Q99 50 94 70 Z"/><ellipse cx="50" cy="50" rx="27" ry="23"/>'
+        + '<path d="M40 30 Q34 50 40 70 M60 30 Q66 50 60 70" style="fill:none;stroke:var(--ink-light);stroke-width:4;stroke-linecap:round" opacity=".45"/>'
+        + '<ellipse cx="44" cy="36" rx="7" ry="4" style="fill:var(--ink-light)" opacity=".45"/>',
+      // étoile (jaune)
+      '<path d="M50.0 9.0 L61.2 37.6 L91.8 39.4 L68.1 58.9 L75.9 88.6 L50.0 72.0 L24.1 88.6 L31.9 58.9 L8.2 39.4 L38.8 37.6 Z" style="stroke-linejoin:round"/>'
+        + '<ellipse cx="45" cy="32" rx="6" ry="4" style="fill:var(--ink-light)" opacity=".45"/>',
+      // losange (vert)
+      '<path d="M50 6 L92 50 L50 94 L8 50 Z"/><ellipse cx="40" cy="32" rx="10" ry="6" style="fill:var(--ink-light)" opacity=".45"/>',
+      // hexagone (bleu)
+      '<path d="M50 6 L88 28 L88 72 L50 94 L12 72 L12 28 Z"/><ellipse cx="36" cy="30" rx="13" ry="7" style="fill:var(--ink-light)" opacity=".45"/>',
+      // cœur (violet)
+      '<path d="M50 90 C20 68 6 52 6 34 C6 18 18 8 31 8 C40 8 46 13 50 20 C54 13 60 8 69 8 C82 8 94 18 94 34 C94 52 80 68 50 90Z"/><ellipse cx="30" cy="26" rx="11" ry="6" style="fill:var(--ink-light)" opacity=".45"/>',
     ];
     const NOMS = ['roses', 'orange', 'jaunes', 'verts', 'bleus', 'violets'];
     const DIFF = [['Facile', 'var(--t6)'], ['Moyen', 'var(--t4)'], ['Difficile', 'var(--t2)'], ['Expert', 'var(--t10)']];
@@ -911,7 +923,7 @@
       return new Promise((ok) => setTimeout(ok, ms)).then(() => { if (moi !== gen) throw ABANDON; });
     }
     function svg(t) {
-      return `<svg viewBox="0 0 100 100" aria-hidden="true"><g style="fill:var(--b${t})">${FORMES[t]}</g><ellipse cx="36" cy="30" rx="13" ry="7" style="fill:var(--ink-light)" opacity=".45"/></svg>`;
+      return `<svg viewBox="0 0 100 100" aria-hidden="true"><g style="fill:var(--b${t})">${FORMES[t]}</g></svg>`;
     }
 
     // ---------- alignements ----------
