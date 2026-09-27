@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0A0F1D">
 <title>Fusioncrash</title>
-<meta name="description" content="Deux jeux en couleurs où chaque coup fait de la musique : Bonbons (échange, aligne 3, combos, 10 niveaux) et Fusion (4 niveaux). Tutoriels pour apprendre à jouer.">
+<meta name="description" content="Deux jeux en couleurs où chaque coup fait de la musique : Monstres (échange, aligne 3, combos, 10 niveaux) et Fusion (4 niveaux). Tutoriels pour apprendre à jouer.">
 <style>
   :root{
     --navy:#0A0F1D;
@@ -311,7 +311,7 @@
   <section id="accueil">
     <p class="lead">Deux jeux en couleurs, et chaque coup fait de la musique&nbsp;🎵</p>
     <div class="jeux">
-      <button class="game" id="goBonbons"><span class="gicon" aria-hidden="true">🍬</span><span><b>Bonbons<span class="new">NOUVEAU</span></b><small>Échange, aligne 3, fais des combos · 10 niveaux</small></span></button>
+      <button class="game" id="goBonbons"><span class="gicon" aria-hidden="true">👾</span><span><b>Monstres<span class="new">NOUVEAU</span></b><small>Échange, aligne 3 monstres, fais des combos · 10 niveaux</small></span></button>
       <button class="game" id="goFusion"><span class="gicon" aria-hidden="true">🔢</span><span><b>Fusion</b><small>Fais glisser et fusionne les tuiles · 4 niveaux</small></span></button>
     </div>
     <div class="joueur" id="joueur" hidden>
@@ -378,10 +378,10 @@
   <section id="menuBonbons" hidden>
     <div class="bar">
       <button class="icon" data-accueil aria-label="Retour à l’accueil">←</button>
-      <div class="title">🍬 Bonbons</div>
+      <div class="title">👾 Monstres</div>
       <span class="spacer"></span>
     </div>
-    <p class="lead">Échange deux bonbons voisins pour en aligner 3 de la même couleur. Enchaîne les combos, crée des bonbons spéciaux et gagne des étoiles&nbsp;!</p>
+    <p class="lead">Échange deux monstres voisins pour en aligner 3 pareils. Enchaîne les combos, crée des monstres spéciaux et gagne des étoiles&nbsp;!</p>
     <button id="bBtnTuto" class="btn-main">🎓 Apprendre à jouer</button>
     <h2>Carte des niveaux</h2>
     <div class="legende" id="bLegende"></div>
@@ -407,14 +407,14 @@
       <div class="arrow" id="bTutoOk" aria-hidden="true"></div>
       <button class="btn-main" id="bTutoBtn" hidden></button>
     </div>
-    <div class="board" id="bBoard" tabindex="0" role="application" aria-label="Grille de bonbons : fais glisser un bonbon vers son voisin, ou flèches puis Entrée">
+    <div class="board" id="bBoard" tabindex="0" role="application" aria-label="Grille de monstres : fais glisser un monstre vers son voisin, ou flèches puis Entrée">
       <div id="bCells"></div>
       <div id="bCandies"></div>
       <div class="cursor" id="bCursor" hidden></div>
       <div class="combo" id="bCombo"></div>
       <div class="overlay" id="bOverlay" hidden></div>
     </div>
-    <p class="tip" id="bTip">Astuce : si tu hésites, attends un peu — deux bonbons se mettent à bouger pour te montrer un coup.</p>
+    <p class="tip" id="bTip">Astuce : si tu hésites, attends un peu — deux monstres se mettent à bouger pour te montrer un coup.</p>
     <div class="sr" aria-live="polite" id="bLive"></div>
   </section>
 </main>
@@ -877,19 +877,19 @@
       { n: 8, couleurs: 6, coups: 34, gelee: () => true, recolte: { 5: 25 }, diff: 3 },
     ];
     const TUTO = [
-      { txt: 'Fais glisser un bonbon sur son voisin pour les échanger (ou touche l’un puis l’autre). Aligne 3 bonbons pareils : ils disparaissent ! Échange les deux bonbons qui bougent.',
+      { txt: 'Fais glisser un monstre sur son voisin pour les échanger (ou touche l’un puis l’autre). Aligne 3 monstres pareils : ils disparaissent ! Échange les deux monstres qui bougent.',
         motif: { '3,1': 0, '3,2': 0, '2,3': 0 }, swap: [[2, 3], [3, 3]] },
-      { txt: 'Aligne 4 bonbons : tu gagnes un bonbon RAYÉ !',
+      { txt: 'Aligne 4 monstres : tu gagnes un monstre RAYÉ !',
         motif: { '4,0': 1, '4,1': 1, '4,3': 1, '3,2': 1 }, swap: [[3, 2], [4, 2]] },
-      { txt: 'Un bonbon rayé, aligné avec 2 bonbons de sa couleur, efface toute sa ligne d’un coup !',
+      { txt: 'Un monstre rayé, aligné avec 2 monstres pareils, efface toute sa ligne d’un coup !',
         motif: { '2,0': 2, '2,1': [2, 'h'], '1,2': 2 }, swap: [[1, 2], [2, 2]] },
-      { txt: 'Forme un L ou un T : tu gagnes un bonbon EMBALLÉ, qui explose tout autour de lui !',
+      { txt: 'Forme un L ou un T : tu gagnes un monstre EXPLOSIF, qui fait tout sauter autour de lui !',
         motif: { '2,2': 0, '3,2': 0, '4,0': 0, '4,1': 0, '4,3': 0 }, swap: [[4, 2], [4, 3]] },
-      { txt: 'Aligne 5 bonbons : tu gagnes une BOMBE de couleurs !',
+      { txt: 'Aligne 5 monstres : tu gagnes une BOMBE de couleurs !',
         motif: { '3,0': 3, '3,1': 3, '3,3': 3, '3,4': 3, '2,2': 3 }, swap: [[2, 2], [3, 2]] },
-      { txt: 'Échange la bombe avec un bonbon : TOUS les bonbons de cette couleur disparaissent !',
+      { txt: 'Échange la bombe avec un monstre : TOUS les monstres de cette sorte disparaissent !',
         motif: { '2,2': [-1, 'b'], '2,3': 1 }, swap: [[2, 2], [2, 3]] },
-      { txt: 'Chaque niveau a un nombre de coups et un objectif : faire un score, récolter des bonbons, ou effacer la gelée (les cases roses) en faisant disparaître les bonbons posés dessus. Plus ton score est grand, plus tu gagnes d’étoiles : jusqu’à 3 ★. Les niveaux deviennent de plus en plus durs !',
+      { txt: 'Chaque niveau a un nombre de coups et un objectif : faire un score, attraper des monstres, ou effacer la gelée (les cases roses) en faisant disparaître les monstres posés dessus. Plus ton score est grand, plus tu gagnes d’étoiles : jusqu’à 3 ★. Les niveaux deviennent de plus en plus durs !',
         motif: {}, gelee: (r, c) => r >= 3, btn: 'À moi de jouer !' },
     ];
     const BRAVO = ['', '', 'Bien joué !', 'Super !', 'Génial !', 'Incroyable !'];
@@ -1138,7 +1138,7 @@
     function decrire(c) {
       const parts = [];
       if (c.score) parts.push(`fais ${c.score} points`);
-      if (c.recolte) parts.push('récolte ' + Object.entries(c.recolte).map(([t, n]) => `${n} ${NOMS[t]}`).join(' et '));
+      if (c.recolte) parts.push('attrape ' + Object.entries(c.recolte).map(([t, n]) => `${n} ${NOMS[t]}`).join(' et '));
       if (c.gelee) parts.push('efface toute la gelée');
       const s = parts.join(', et ') + ` en ${c.coups} coups.`;
       return s[0].toUpperCase() + s.slice(1);
