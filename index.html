@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0A0F1D">
-<title>mojofusion — jeux de bonbons et de fusion en couleurs</title>
+<title>Fusioncrash</title>
 <meta name="description" content="Deux jeux en couleurs où chaque coup fait de la musique : Bonbons (échange, aligne 3, combos, 10 niveaux) et Fusion (4 niveaux). Tutoriels pour apprendre à jouer.">
 <style>
   :root{
@@ -47,8 +47,8 @@
     padding:var(--sp-4) 0 var(--sp-2);
   }
   .wordmark{font-size:26px;font-weight:800;letter-spacing:-0.5px;line-height:1;}
-  .wordmark .mojo{color:var(--cream);}
-  .wordmark .fusion{
+  .wordmark .w1{color:var(--cream);}
+  .wordmark .w2{
     background:linear-gradient(90deg,var(--t1),var(--t3),var(--t5),var(--t7),var(--t9),var(--t10));
     -webkit-background-clip:text;background-clip:text;color:transparent;
   }
@@ -259,7 +259,7 @@
 </head>
 <body>
 <header>
-  <div class="wordmark" aria-label="mojofusion"><span class="mojo">mojo</span><span class="fusion">fusion</span></div>
+  <div class="wordmark" aria-label="Fusioncrash"><span class="w1">Fusion</span><span class="w2">crash</span></div>
 </header>
 
 <main>
@@ -415,9 +415,9 @@
 
   // ---------- Stockage (facultatif : la page marche sans) ----------
   const store = {
-    get(k, d) { try { const v = localStorage.getItem('mojofusion/' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
-    set(k, v) { try { localStorage.setItem('mojofusion/' + k, JSON.stringify(v)); } catch {} },
-    del(k) { try { localStorage.removeItem('mojofusion/' + k); } catch {} },
+    get(k, d) { try { const v = localStorage.getItem('fusioncrash/' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem('fusioncrash/' + k, JSON.stringify(v)); } catch {} },
+    del(k) { try { localStorage.removeItem('fusioncrash/' + k); } catch {} },
   };
 
   // ---------- Son : chaque fusion joue une note ----------

@@ -1,4 +1,6 @@
-# Les jeux d'Axel
+# Fusioncrash
+
+Les jeux d'Axel.
 
 Deux jeux en couleurs, et chaque coup fait de la musique.
 
