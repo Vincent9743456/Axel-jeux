@@ -175,6 +175,27 @@
   }
   .ghost:disabled{opacity:.4;cursor:default;}
   .ghost.warn{border-color:var(--rouge);color:var(--rouge);}
+  /* ---------- compte ---------- */
+  .form{display:flex;flex-direction:column;gap:var(--sp-3);margin-top:var(--sp-2);}
+  .onglets{display:flex;gap:var(--sp-2);}
+  .onglets button{
+    flex:1;min-height:48px;border-radius:var(--r-1);font-size:15px;font-weight:700;
+    background:transparent;border:1.5px solid var(--navy-3);color:var(--dim);
+  }
+  .onglets button[aria-pressed="true"]{background:var(--navy-2);border-color:var(--dim-2);color:var(--cream);}
+  .champ{display:flex;flex-direction:column;gap:var(--sp-1);}
+  .champ label{font-size:13px;color:var(--dim);font-weight:600;}
+  .champ input{
+    height:52px;padding:0 var(--sp-4);border-radius:var(--r-1);
+    background:var(--navy-2);border:1.5px solid var(--navy-3);color:var(--cream);
+    font:inherit;font-size:17px;user-select:text;-webkit-user-select:text;
+  }
+  .champ input:focus{outline:none;border-color:var(--orange);}
+  .champ small{font-size:12px;color:var(--dim-2);}
+  .erreur{color:var(--rouge);font-size:14px;min-height:1.2em;}
+  .joueur{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);flex-wrap:wrap;margin-top:var(--sp-5);color:var(--dim);font-size:14px;}
+  .joueur b{color:var(--cream);}
+  .joueur .ghost{flex:none;min-height:44px;padding:0 var(--sp-4);font-size:14px;}
   .tip{color:var(--dim-2);font-size:13px;text-align:center;margin-top:var(--sp-3);line-height:1.4;}
   /* ---------- accueil ---------- */
   .jeux{display:flex;flex-direction:column;gap:var(--sp-3);margin-top:var(--sp-2);}
@@ -263,12 +284,39 @@
 </header>
 
 <main>
+  <!-- ================= COMPTE ================= -->
+  <section id="compte" hidden>
+    <p class="lead">Connecte-toi pour garder ta partie, tes étoiles et tes records sur tous tes appareils.</p>
+    <form class="form" id="formCompte" novalidate>
+      <div class="onglets" role="group" aria-label="Choix">
+        <button type="button" id="ongletConnexion" aria-pressed="true">J’ai un compte</button>
+        <button type="button" id="ongletInscription" aria-pressed="false">Nouveau joueur</button>
+      </div>
+      <div class="champ">
+        <label for="pseudo">Pseudo</label>
+        <input id="pseudo" name="pseudo" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="20" required>
+        <small id="aidePseudo" hidden>3 à 20 caractères : lettres, chiffres, - ou _</small>
+      </div>
+      <div class="champ">
+        <label for="mdp">Mot de passe</label>
+        <input id="mdp" name="mdp" type="password" autocomplete="current-password" maxlength="100" required>
+        <small id="aideMdp" hidden>Au moins 4 caractères. Note-le bien : sans adresse e-mail, il ne peut pas être récupéré.</small>
+      </div>
+      <p class="erreur" id="erreurCompte" role="alert"></p>
+      <button class="btn-main" id="btnCompte" type="submit">Se connecter</button>
+    </form>
+  </section>
+
   <!-- ================= ACCUEIL ================= -->
   <section id="accueil">
     <p class="lead">Deux jeux en couleurs, et chaque coup fait de la musique&nbsp;🎵</p>
     <div class="jeux">
       <button class="game" id="goBonbons"><span class="gicon" aria-hidden="true">🍬</span><span><b>Bonbons<span class="new">NOUVEAU</span></b><small>Échange, aligne 3, fais des combos · 10 niveaux</small></span></button>
       <button class="game" id="goFusion"><span class="gicon" aria-hidden="true">🔢</span><span><b>Fusion</b><small>Fais glisser et fusionne les tuiles · 4 niveaux</small></span></button>
+    </div>
+    <div class="joueur" id="joueur" hidden>
+      <span>👤 <b id="nomJoueur"></b> · <span id="etatSauvegarde"></span></span>
+      <button class="ghost" id="btnDeconnexion">Se déconnecter</button>
     </div>
   </section>
 
@@ -413,11 +461,19 @@
   ];
   const ARROWS = { left: '⬅', right: '➡', up: '⬆', down: '⬇' };
 
+  // ---------- Comptes en ligne (Supabase) ----------
+  // Laisser vide = pas de comptes : la partie reste sur l'appareil.
+  // Les deux valeurs viennent de Supabase → Project Settings → API.
+  // Elles sont publiques par nature ; ne JAMAIS mettre ici la clé « service_role ».
+  const SUPABASE_URL = '';
+  const SUPABASE_CLE = '';
+
   // ---------- Stockage (facultatif : la page marche sans) ----------
+  let apresModif = () => {};
   const store = {
     get(k, d) { try { const v = localStorage.getItem('fusioncrash/' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
-    set(k, v) { try { localStorage.setItem('fusioncrash/' + k, JSON.stringify(v)); } catch {} },
-    del(k) { try { localStorage.removeItem('fusioncrash/' + k); } catch {} },
+    set(k, v) { try { localStorage.setItem('fusioncrash/' + k, JSON.stringify(v)); } catch {} apresModif(); },
+    del(k) { try { localStorage.removeItem('fusioncrash/' + k); } catch {} apresModif(); },
   };
 
   // ---------- Son : chaque fusion joue une note ----------
@@ -584,7 +640,7 @@
   }
 
   // ---------- Écrans ----------
-  const ECRANS = ['accueil', 'menu', 'jeu', 'menuBonbons', 'jeuBonbons'];
+  const ECRANS = ['compte', 'accueil', 'menu', 'jeu', 'menuBonbons', 'jeuBonbons'];
   function montrer(ecran) {
     for (const e of ECRANS) $(e).hidden = e !== ecran;
     window.scrollTo(0, 0);
@@ -1409,6 +1465,170 @@
     return { carte, quitter, relayout };
   })();
 
+
+  // =====================================================================
+  // COMPTE — pseudo + mot de passe, la partie suit le joueur.
+  // Tout ce que le jeu garde (clés « fusioncrash/… ») part au serveur, et
+  // la sauvegarde la plus récente gagne. Sans réseau, on joue quand même :
+  // l'envoi repart au retour de la connexion.
+  // =====================================================================
+  const Compte = (() => {
+    const actif = !!(SUPABASE_URL && SUPABASE_CLE);
+    const PREFIXE = 'fusioncrash/', CLE_SESSION = 'fusioncrash-session', CLE_MAJ = 'fusioncrash-maj', CLE_ATTENTE = 'fusioncrash-attente';
+    const lire = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+    const ecrire = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
+    let session = null;
+    try { session = JSON.parse(lire(CLE_SESSION) || 'null'); } catch {}
+    let minuteur = null, envoiEnCours = false;
+
+    async function rpc(fn, corps, keepalive) {
+      const h = { 'Content-Type': 'application/json', apikey: SUPABASE_CLE };
+      if (!SUPABASE_CLE.startsWith('sb_')) h.Authorization = 'Bearer ' + SUPABASE_CLE;
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 12000);
+      try {
+        const r = await fetch(SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/' + fn, {
+          method: 'POST', headers: h, body: JSON.stringify(corps), signal: ctrl.signal, keepalive: !!keepalive,
+        });
+        if (!r.ok) throw new Error('serveur ' + r.status);
+        return await r.json();
+      } finally { clearTimeout(t); }
+    }
+    function cles() {
+      const out = [];
+      try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(PREFIXE)) out.push(k); } } catch {}
+      return out;
+    }
+    function instantane() {
+      const o = {};
+      for (const k of cles()) o[k.slice(PREFIXE.length)] = lire(k);
+      return o;
+    }
+    function appliquer(sauvegarde, maj) {
+      for (const k of cles()) ecrire(k, null);
+      for (const [k, v] of Object.entries(sauvegarde || {})) if (typeof v === 'string') ecrire(PREFIXE + k, v);
+      ecrire(CLE_MAJ, String(maj || 0));
+      ecrire(CLE_ATTENTE, null);
+    }
+    function etat(txt) { const e = $('etatSauvegarde'); if (e) e.textContent = txt; }
+
+    async function envoyer(keepalive) {
+      if (!actif || !session || envoiEnCours) return;
+      envoiEnCours = true;
+      etat('⏳ Sauvegarde…');
+      try {
+        const r = await rpc('sauver', { p_jeton: session.jeton, p_sauvegarde: instantane(), p_maj: +(lire(CLE_MAJ) || 0) }, keepalive);
+        if (r && r.erreur === 'jeton') { perdreSession(); return; }
+        ecrire(CLE_ATTENTE, null);
+        etat('✓ Partie sauvegardée');
+      } catch {
+        etat('Hors ligne : sauvegarde en attente');
+      } finally { envoiEnCours = false; }
+    }
+    function modifie() {
+      if (!actif || !session) return;
+      ecrire(CLE_MAJ, String(Date.now()));
+      ecrire(CLE_ATTENTE, '1');
+      clearTimeout(minuteur);
+      minuteur = setTimeout(() => envoyer(), 2000);
+    }
+    function perdreSession() {
+      ecrire(CLE_SESSION, null);
+      session = null;
+      ecran('Ta session a expiré : reconnecte-toi.');
+    }
+
+    // ---------- écran de connexion ----------
+    let inscription = false;
+    function mode(insc) {
+      inscription = insc;
+      $('ongletConnexion').setAttribute('aria-pressed', String(!insc));
+      $('ongletInscription').setAttribute('aria-pressed', String(insc));
+      $('aidePseudo').hidden = !insc;
+      $('aideMdp').hidden = !insc;
+      $('mdp').autocomplete = insc ? 'new-password' : 'current-password';
+      $('btnCompte').textContent = insc ? 'Créer mon compte' : 'Se connecter';
+      $('erreurCompte').textContent = '';
+    }
+    function ecran(msg) {
+      mode(false);
+      $('erreurCompte').textContent = msg || '';
+      montrer('compte');
+    }
+    const ERREURS = {
+      pseudo: 'Le pseudo doit faire 3 à 20 caractères : lettres, chiffres, - ou _.',
+      mdp: 'Le mot de passe doit faire au moins 4 caractères.',
+      pris: 'Ce pseudo est déjà pris. Choisis-en un autre.',
+      identifiants: 'Pseudo ou mot de passe incorrect.',
+    };
+    $('ongletConnexion').addEventListener('click', () => mode(false));
+    $('ongletInscription').addEventListener('click', () => mode(true));
+    $('formCompte').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pseudo = $('pseudo').value.trim(), mdp = $('mdp').value;
+      const err = $('erreurCompte'), btn = $('btnCompte');
+      if (inscription && !/^[A-Za-z0-9_-]{3,20}$/.test(pseudo)) { err.textContent = ERREURS.pseudo; return; }
+      if (inscription && mdp.length < 4) { err.textContent = ERREURS.mdp; return; }
+      if (!pseudo || !mdp) { err.textContent = 'Remplis ton pseudo et ton mot de passe.'; return; }
+      btn.disabled = true; err.textContent = '';
+      try {
+        const r = await rpc(inscription ? 'inscrire' : 'connexion', { p_pseudo: pseudo, p_mdp: mdp });
+        if (!r || r.erreur) { err.textContent = ERREURS[r && r.erreur] || 'Ça n’a pas marché. Réessaie.'; return; }
+        session = { jeton: r.jeton, pseudo: r.pseudo };
+        ecrire(CLE_SESSION, JSON.stringify(session));
+        const serveurVide = !r.sauvegarde || !Object.keys(r.sauvegarde).length;
+        if (inscription || serveurVide) {
+          // Nouveau compte : la partie déjà jouée sur cet appareil devient la sienne.
+          ecrire(CLE_MAJ, String(Date.now()));
+          await envoyer();
+        } else appliquer(r.sauvegarde, r.maj);
+        location.reload();
+      } catch {
+        err.textContent = 'Pas de connexion internet. Vérifie ton réseau et réessaie.';
+      } finally { btn.disabled = false; }
+    });
+    $('btnDeconnexion').addEventListener('click', async () => {
+      const b = $('btnDeconnexion');
+      b.disabled = true;
+      clearTimeout(minuteur);
+      await envoyer();
+      if (lire(CLE_ATTENTE)) {
+        b.disabled = false;
+        etat('Hors ligne : reconnecte-toi à internet avant de te déconnecter, sinon ta dernière partie serait perdue.');
+        return;
+      }
+      try { await rpc('deconnecter', { p_jeton: session.jeton }); } catch {}
+      for (const k of cles()) ecrire(k, null);
+      ecrire(CLE_SESSION, null); ecrire(CLE_MAJ, null); ecrire(CLE_ATTENTE, null);
+      location.reload();
+    });
+
+    // ---------- démarrage ----------
+    function demarrer(suite) {
+      if (!actif) { suite(); return; }
+      if (!session) { ecran(); return; }
+      apresModif = modifie;
+      $('joueur').hidden = false;
+      $('nomJoueur').textContent = session.pseudo;
+      etat(lire(CLE_ATTENTE) ? 'Sauvegarde en attente' : '✓ Partie sauvegardée');
+      suite();
+      // Une partie plus récente jouée sur un autre appareil ?
+      rpc('charger', { p_jeton: session.jeton }).then((r) => {
+        if (r && r.erreur === 'jeton') { perdreSession(); return; }
+        const local = +(lire(CLE_MAJ) || 0);
+        if (r && r.maj > local && !lire(CLE_ATTENTE) && ($('jeu').hidden && $('jeuBonbons').hidden)) {
+          appliquer(r.sauvegarde, r.maj);
+          location.reload();
+        } else if (lire(CLE_ATTENTE) || local > (r ? r.maj : 0)) envoyer();
+      }).catch(() => etat(lire(CLE_ATTENTE) ? 'Hors ligne : sauvegarde en attente' : 'Hors ligne'));
+      window.addEventListener('online', () => { if (lire(CLE_ATTENTE)) envoyer(); });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden' && lire(CLE_ATTENTE)) { clearTimeout(minuteur); envoyer(true); }
+      });
+    }
+    return { demarrer };
+  })();
+
   // ---------- Commandes ----------
   $('btnTuto').addEventListener('click', () => tuto(0));
   $('btnMenu').addEventListener('click', menu);
@@ -1454,7 +1674,7 @@
   window.addEventListener('resize', () => { relayout(); Bonbons.relayout(); });
   window.addEventListener('pagehide', sauver);
 
-  accueil();
+  Compte.demarrer(accueil);
 })();
 </script>
 </body>
